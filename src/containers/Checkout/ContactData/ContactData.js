@@ -98,7 +98,7 @@ class ContactData extends Component {
         event.preventDefault(); //prevents submission automatically
         const formData = {};
         for (let formElementIdentifier in this.state.orderForm) {
-            formData[formElementIdentifier] = this.state.orderForm[formElementIdentifier].value; //mapping the value only, omitting element type and other keys
+            formData[formElementIdentifier] = this.state.orderForm[formElementIdentifier].value; //mapping the whole state
         }
         const order = {
             ingredients: this.props.ings,
@@ -112,7 +112,7 @@ class ContactData extends Component {
         let isValid = true;
 
         if (rules.required) {
-            isValid = value.trim() !== '' && isValid;
+            isValid = value.trim() !== '' && isValid; //check the required rule in validation in the field
         }
 
         if (rules.minLength) {
@@ -123,6 +123,16 @@ class ContactData extends Component {
             isValid = value.length <= rules.minLength
         }
 
+        if (rules.isEmail) {
+            const pattern = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
+            isValid = pattern.test(value) && isValid
+        }
+
+        if (rules.isNumeric) {
+            const pattern = /^\d+$/;
+            isValid = pattern.test(value) && isValid
+        }
+
         return isValid;
     }
 
@@ -131,9 +141,9 @@ class ContactData extends Component {
             ...this.state.orderForm
         };
         const updatedFormElement = {
-            ...updatedOrderForm[inputIdentifier] //copies the values inside the key, e.g. copies all the attributes of name
+            ...updatedOrderForm[inputIdentifier] //copies the field in order that is currently being edited
         };
-        updatedFormElement.value = event.target.value;
+        updatedFormElement.value = event.target.value; //using the copied field, change it to the edited one
         updatedFormElement.valid = this.checkValidity(updatedFormElement.value, updatedFormElement.validation)
         updatedFormElement.touched = true;
         updatedOrderForm[inputIdentifier] = updatedFormElement;
